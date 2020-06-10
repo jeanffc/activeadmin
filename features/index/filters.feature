@@ -1,3 +1,4 @@
+@filters
 Feature: Index Filtering
 
   Scenario: Default Resources Filters
@@ -22,6 +23,17 @@ Feature: Index Filtering
     And I should see 1 posts in the table
     And I should see "Hello World 2" within ".index_table"
     And I should see current filter "title_contains" equal to "Hello World 2" with label "Title contains"
+
+  Scenario: No XSS in Resources Filters
+    Given an index configuration of:
+    """
+      ActiveAdmin.register Post do
+        filter :title
+      end
+    """
+    When I fill in "Title" with "<script>alert('hax')</script>"
+    And I press "Filter"
+    Then I should see current filter "title_contains" equal to "<script>alert('hax')</script>" with label "Title contains"
 
   Scenario: Filtering posts with no results
     Given 3 posts exist
@@ -52,10 +64,10 @@ Feature: Index Filtering
     And I press "Filter"
 
     Then I follow "2"
-    Then I should see "Displaying Posts 3 - 4 of 7 in total"
+    And I should see "Displaying Posts 3 - 4 of 7 in total"
 
-    Then I follow "3"
-    Then I should see "Displaying Posts 5 - 6 of 7 in total"
+    And I follow "3"
+    And I should see "Displaying Posts 5 - 6 of 7 in total"
 
   Scenario: Filtering posts while not on the first page
     Given 9 posts exist
@@ -66,11 +78,11 @@ Feature: Index Filtering
       end
     """
     When I follow "2"
-    Then I should see "Displaying Posts 6 - 9 of 9 in total"
+    Then I should see "Displaying Posts 6 - 9 of 9 in total"
 
     When I fill in "Title" with "Hello World 2"
     And I press "Filter"
-    And I should see 1 posts in the table
+    Then I should see 1 posts in the table
     And I should see "Hello World 2" within ".index_table"
 
   Scenario: Checkboxes - Filtering posts written by anyone
@@ -163,7 +175,7 @@ Feature: Index Filtering
     And I should see "Mystery" within ".index_table"
     And I should see "Non-Fiction" within ".index_table"
     And the "Jane Doe" checkbox should not be checked
-    And should not see a sidebar titled "Search Status:"
+    And I should not see a sidebar titled "Search status:"
 
   Scenario: Checkboxes - Filtering categories via posts written by Jane Doe
     Given a category named "Mystery" exists
@@ -182,9 +194,8 @@ Feature: Index Filtering
     And the "Jane Doe" checkbox should be checked
 
   Scenario: Filtering posts without default scope
-
     Given a post with the title "Hello World" written by "Jane Doe" exists
-    Given an index configuration of:
+    And an index configuration of:
     """
       ActiveAdmin.register Post do
         scope :all
@@ -202,7 +213,7 @@ Feature: Index Filtering
   Scenario: Filtering posts by category
     Given a category named "Mystery" exists
     And a post with the title "Hello World" written by "Jane Doe" in category "Non-Fiction" exists
-    Given an index configuration of:
+    And an index configuration of:
     """
       ActiveAdmin.register Category
       ActiveAdmin.register Post do
@@ -213,7 +224,7 @@ Feature: Index Filtering
 
     When I select "Non-Fiction" from "Category"
     And I press "Filter"
-    Then I should see a sidebar titled "Search Status:"
+    Then I should see a sidebar titled "Search status:"
     And I should see link "Non-Fiction" in current filters
 
   Scenario: Enabling filters status sidebar
@@ -225,7 +236,7 @@ Feature: Index Filtering
       end
     """
     And I press "Filter"
-    Then I should see a sidebar titled "Search Status:"
+    Then I should see a sidebar titled "Search status:"
 
   Scenario: Disabling filters status sidebar
     Given an index configuration of:
@@ -236,4 +247,97 @@ Feature: Index Filtering
       end
     """
     And I press "Filter"
-    Then I should not see a sidebar titled "Search Status:"
+    Then I should not see a sidebar titled "Search status:"
+
+  Scenario: Filters and nested resources
+    Given a post with the title "The arrogant president" written by "Jane Doe" exists
+    And a configuration of:
+    """
+      ActiveAdmin.register User
+      ActiveAdmin.register Post do
+        permit_params :user_id
+
+        belongs_to :author, class_name: "User"
+      end
+    """
+    And I am logged in
+    And I am on the index page for users
+    When I select "The arrogant president" from "Posts"
+    And I press "Filter"
+    And I should see 1 user in the table
+
+  Scenario: Too many categories to show
+    Given a category named "Astrology" exists
+    And a category named "Astronomy" exists
+    And a category named "Navigation" exists
+    And a post with the title "Star Signs" in category "Astrology" exists
+    And a post with the title "Constellations" in category "Astronomy" exists
+    And a post with the title "Compass and Sextant" in category "Navigation" exists
+    And an index configuration of:
+    """
+      ActiveAdmin.register Category
+      ActiveAdmin.register Post do
+        config.namespace.maximum_association_filter_arity = 3
+      end
+    """
+    And I am on the index page for posts
+    Then I should see "Category" within "#filters_sidebar_section label[for="q_custom_category_id"]"
+    And I should not see "Category name starts with" within "#filters_sidebar_section"
+
+    Given an index configuration of:
+    """
+      ActiveAdmin.register Category
+      ActiveAdmin.register Post do
+        config.namespace.maximum_association_filter_arity = 2
+      end
+    """
+    And I am on the index page for posts
+    Then I should see "Category name starts with" within "#filters_sidebar_section"
+    When I fill in "Category name starts with" with "Astro"
+    And I press "Filter"
+    Then I should see "Star Signs"
+    And I should see "Constellations"
+    And I should not see "Compass and Sextant"
+
+    Given an index configuration of:
+    """
+      ActiveAdmin.register Category
+      ActiveAdmin.register Post do
+        config.namespace.maximum_association_filter_arity = 2
+        config.namespace.filter_method_for_large_association = '_contains'
+      end
+    """
+    And I am on the index page for posts
+    Then I should see "Category name contains" within "#filters_sidebar_section"
+    When I fill in "Category name contains" with "Astro"
+    And I press "Filter"
+    Then I should see "Star Signs"
+    And I should see "Constellations"
+    And I should not see "Compass and Sextant"
+
+    Given an index configuration of:
+    """
+      ActiveAdmin.register Category
+      ActiveAdmin.register Post do
+        config.namespace.maximum_association_filter_arity = :unlimited
+        config.namespace.filter_method_for_large_association = '_contains'
+      end
+    """
+    And I am on the index page for posts
+    Then I should see "Category" within "#filters_sidebar_section"
+    When I select "Astronomy" from "Category"
+    And I press "Filter"
+    Then I should not see "Star Signs"
+    And I should see "Constellations"
+    And I should not see "Compass and Sextant"
+
+    Given an index configuration of:
+    """
+      ActiveAdmin.register Category
+      ActiveAdmin.register Post do
+        config.namespace.maximum_association_filter_arity = :unlimited
+      end
+    """
+    And I am on the index page for posts
+    Then I should see "Category" within "#filters_sidebar_section label[for="q_custom_category_id"]"
+    And I should not see "Category name starts with" within "#filters_sidebar_section"

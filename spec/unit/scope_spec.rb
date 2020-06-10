@@ -1,26 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe ActiveAdmin::Scope do
-
   describe "creating a scope" do
-    subject{ scope }
+    subject { scope }
 
     context "when just a scope method" do
       let(:scope) { ActiveAdmin::Scope.new :published }
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq("Published")}
+        it { is_expected.to eq("Published") }
       end
 
       describe '#id' do
         subject { super().id }
-        it      { is_expected.to eq("published")}
+        it { is_expected.to eq("published") }
       end
 
       describe '#scope_method' do
         subject { super().scope_method }
-        it      { is_expected.to eq(:published) }
+        it { is_expected.to eq(:published) }
       end
     end
 
@@ -29,24 +28,24 @@ RSpec.describe ActiveAdmin::Scope do
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq("All")}
+        it { is_expected.to eq("All") }
       end
 
       describe '#id' do
         subject { super().id }
-        it      { is_expected.to eq("all")}
+        it { is_expected.to eq("all") }
       end
       # :all does not return a chain but an array of active record
       # instances. We set the scope_method to nil then.
 
       describe '#scope_method' do
         subject { super().scope_method }
-        it      { is_expected.to eq(nil) }
+        it { is_expected.to eq(nil) }
       end
 
       describe '#scope_block' do
         subject { super().scope_block }
-        it      { is_expected.to eq(nil) }
+        it { is_expected.to eq(nil) }
       end
     end
 
@@ -55,17 +54,17 @@ RSpec.describe ActiveAdmin::Scope do
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq 'Tous' }
+        it { is_expected.to eq 'Tous' }
       end
 
       describe '#scope_method' do
         subject { super().scope_method }
-        it      { is_expected.to eq nil }
+        it { is_expected.to eq nil }
       end
 
       describe '#scope_block' do
         subject { super().scope_block }
-        it      { is_expected.to eq nil }
+        it { is_expected.to eq nil }
       end
     end
 
@@ -74,41 +73,41 @@ RSpec.describe ActiveAdmin::Scope do
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq("With API Access")}
+        it { is_expected.to eq("With API Access") }
       end
 
       describe '#id' do
         subject { super().id }
-        it      { is_expected.to eq("with_api_access")}
+        it { is_expected.to eq("with_api_access") }
       end
 
       describe '#scope_method' do
         subject { super().scope_method }
-        it      { is_expected.to eq(:with_api_access) }
+        it { is_expected.to eq(:with_api_access) }
       end
     end
 
     context "when a name and scope block" do
-      let(:scope) { ActiveAdmin::Scope.new("My Scope"){|s| s } }
+      let(:scope) { ActiveAdmin::Scope.new("My Scope") { |s| s } }
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq("My Scope")}
+        it { is_expected.to eq("My Scope") }
       end
 
       describe '#id' do
         subject { super().id }
-        it      { is_expected.to eq("my_scope")}
+        it { is_expected.to eq("my_scope") }
       end
 
       describe '#scope_method' do
         subject { super().scope_method }
-        it      { is_expected.to eq(nil) }
+        it { is_expected.to eq(nil) }
       end
 
       describe '#scope_block' do
         subject { super().scope_block }
-        it      { is_expected.to be_a(Proc)}
+        it { is_expected.to be_a(Proc) }
       end
     end
 
@@ -117,24 +116,24 @@ RSpec.describe ActiveAdmin::Scope do
 
       describe '#name' do
         subject { super().name }
-        it      { is_expected.to eq("my scope")}
+        it { is_expected.to eq("my scope") }
       end
 
       describe '#id' do
         subject { super().id }
-        it      { is_expected.to eq("my_scope")}
+        it { is_expected.to eq("my_scope") }
       end
     end
 
     context "with a proc as the label" do
       it "should raise an exception if a second argument isn't provided" do
-        expect{
-          ActiveAdmin::Scope.new proc{ Date.today.strftime '%A' }
+        expect {
+          ActiveAdmin::Scope.new proc { Date.today.strftime '%A' }
         }.to raise_error 'A string/symbol is required as the second argument if your label is a proc.'
       end
 
       it "should properly render the proc" do
-        scope = ActiveAdmin::Scope.new proc{ Date.today.strftime '%A' }, :foobar
+        scope = ActiveAdmin::Scope.new proc { Date.today.strftime '%A' }, :foobar
         expect(scope.name.call).to eq Date.today.strftime '%A'
       end
     end
@@ -149,12 +148,12 @@ RSpec.describe ActiveAdmin::Scope do
 
       describe '#name' do
         subject { super().name }
-        it { is_expected.to eq("All published")}
+        it { is_expected.to eq("All published") }
       end
 
       describe '#id' do
         subject { super().id }
-        it { is_expected.to eq("published")}
+        it { is_expected.to eq("published") }
       end
 
       describe '#scope_method' do
@@ -162,7 +161,6 @@ RSpec.describe ActiveAdmin::Scope do
         it { is_expected.to eq(:published) }
       end
     end
-
   end # describe "creating a scope"
 
   describe "#display_if_block" do
@@ -172,7 +170,7 @@ RSpec.describe ActiveAdmin::Scope do
     end
 
     it "should return the :if block if set" do
-      scope = ActiveAdmin::Scope.new(:with_block, nil, if: proc{ false })
+      scope = ActiveAdmin::Scope.new(:with_block, nil, if: proc { false })
       expect(scope.display_if_block.call).to eq false
     end
   end
@@ -189,7 +187,7 @@ RSpec.describe ActiveAdmin::Scope do
     end
 
     it "should store the :default proc" do
-      scope = ActiveAdmin::Scope.new(:with_block, nil, default: proc{ true })
+      scope = ActiveAdmin::Scope.new(:with_block, nil, default: proc { true })
       expect(scope.default_block.call).to eq true
     end
   end
@@ -206,4 +204,20 @@ RSpec.describe ActiveAdmin::Scope do
     end
   end
 
+  describe "group" do
+    it "should default to nil" do
+      scope = ActiveAdmin::Scope.new(:default)
+      expect(scope.group).to eq nil
+    end
+
+    it "should accept a symbol to assign a group to the scope" do
+      scope = ActiveAdmin::Scope.new(:default, nil, group: :test)
+      expect(scope.group).to eq :test
+    end
+
+    it "should accept a string to assign a group to the scope" do
+      scope = ActiveAdmin::Scope.new(:default, nil, group: "test")
+      expect(scope.group).to eq :test
+    end
+  end
 end

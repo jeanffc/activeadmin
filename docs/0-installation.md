@@ -11,7 +11,7 @@ gem 'activeadmin'
 
 # Plus integrations with:
 gem 'devise'
-gem 'cancan' # or cancancan
+gem 'cancancan'
 gem 'draper'
 gem 'pundit'
 ```
@@ -44,15 +44,15 @@ After installing the gem, you need to run the generator. Here are your options:
 The generator adds these core files, among others:
 
 * `app/admin/dashboard.rb`
-* `app/assets/javascripts/active_admin.js.coffee`
+* `app/assets/javascripts/active_admin.js`
 * `app/assets/stylesheets/active_admin.scss`
 * `config/initializers/active_admin.rb`
 
 Now, migrate and seed your database before starting the server:
 
 ```sh
-rake db:migrate
-rake db:seed
+rails db:migrate
+rails db:seed
 rails server
 ```
 
@@ -111,6 +111,30 @@ Draper::CollectionDecorator.send :delegate, :per_page_kaminari
 ## simple_form
 
 If you're getting the error `wrong number of arguments (6 for 4..5)`, [read #2703].
+
+## webpacker
+
+For new apps starting with Rails 6.0, Webpacker has become the default asset generator. You can **opt-in to using Webpacker for ActiveAdmin assets** as well by updating your configuration to turn on the `use_webpacker` option, either at installation time or manually.
+
+* at active_admin installation:
+
+  ```sh
+  rails g active_admin:install --use_webpacker
+  ```
+
+* manually:
+
+  ```ruby
+  ActiveAdmin.setup do |config|
+    config.use_webpacker = true
+  end
+  ```
+
+  And run the generator to get default Active Admin assets:
+
+  ```sh
+  rails g active_admin:webpacker
+  ```
 
 [CHANGELOG]: https://github.com/activeadmin/activeadmin/blob/master/CHANGELOG.md
 [dashboard.rb]: https://github.com/activeadmin/activeadmin/blob/master/lib/generators/active_admin/install/templates/dashboard.rb

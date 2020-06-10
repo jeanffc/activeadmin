@@ -5,9 +5,9 @@ module ActiveAdmin
       builder_method :attributes_table_for
 
       def build(obj, *attrs)
-        @collection     = Array.wrap(obj)
+        @collection = Array.wrap(obj)
         @resource_class = @collection.first.class
-        options = { }
+        options = {}
         options[:for] = @collection.first if single_record?
         super(options)
         @table = table
@@ -16,17 +16,17 @@ module ActiveAdmin
       end
 
       def rows(*attrs)
-        attrs.each {|attr| row(attr) }
+        attrs.each { |attr| row(attr) }
       end
 
       def row(*args, &block)
-        title   = args[0]
+        title = args[0]
         options = args.extract_options!
         classes = [:row]
         if options[:class]
           classes << options[:class]
         elsif title.present?
-          classes << "row-#{ActiveAdmin::Dependency.rails.parameterize(title.to_s)}"
+          classes << "row-#{title.to_s.parameterize(separator: "_")}"
         end
         options[:class] = classes.join(' ')
 

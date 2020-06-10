@@ -110,7 +110,8 @@ module ActiveAdmin
     # end
     # ```
     #
-    # In addition, you can insert the position of the row in the greater collection by using the index_column special command:
+    # In addition, you can insert the position of the row in the greater
+    # collection by using the index_column special command:
     #
     # ```ruby
     # index do
@@ -120,7 +121,8 @@ module ActiveAdmin
     # end
     # ```
     #
-    # index_column take an optional offset parameter to allow a developer to set the starting number for the index (default is 1).
+    # index_column take an optional offset parameter to allow a developer to set
+    # the starting number for the index (default is 1).
     #
     # ## Sorting
     #
@@ -128,9 +130,7 @@ module ActiveAdmin
     # sortable by default. If you are creating a custom column, you may need to give
     # Active Admin a hint for how to sort the table.
     #
-    # If a column is defined using a block, you must pass the key to turn on sorting. The key
-    # is the attribute which gets used to sort objects using Active Record.
-    #
+    # You can pass the key specifying the attribute which gets used to sort objects using Active Record.
     # By default, this is the column on the resource's table that the attribute corresponds to.
     # Otherwise, any attribute that the resource collection responds to can be used.
     #
@@ -190,6 +190,13 @@ module ActiveAdmin
     #     super.includes :publisher # prevents N+1 queries to your database
     #   end
     # end
+    # ```
+    #
+    # You can also define associated objects to include outside of the
+    # `scoped_collection` method:
+    #
+    # ```ruby
+    # includes :publisher
     # ```
     #
     # Then it's simple to sort by any Publisher attribute from within the index table:
@@ -337,9 +344,9 @@ module ActiveAdmin
         #
         # ```
         def actions(options = {}, &block)
-          name          = options.delete(:name)     { '' }
-          defaults      = options.delete(:defaults) { true }
-          dropdown      = options.delete(:dropdown) { false }
+          name = options.delete(:name) { '' }
+          defaults = options.delete(:defaults) { true }
+          dropdown = options.delete(:dropdown) { false }
           dropdown_name = options.delete(:dropdown_name) { I18n.t 'active_admin.dropdown_actions.button_label', default: 'Actions' }
 
           options[:class] ||= 'col-actions'
@@ -362,26 +369,27 @@ module ActiveAdmin
           end
         end
 
-      private
+        private
 
         def defaults(resource, options = {})
+          localizer = ActiveAdmin::Localizers.resource(active_admin_config)
           if controller.action_methods.include?('show') && authorized?(ActiveAdmin::Auth::READ, resource)
-            item I18n.t('active_admin.view'), resource_path(resource), class: "view_link #{options[:css_class]}", title: I18n.t('active_admin.view')
+            item localizer.t(:view), resource_path(resource), class: "view_link #{options[:css_class]}", title: localizer.t(:view)
           end
           if controller.action_methods.include?('edit') && authorized?(ActiveAdmin::Auth::UPDATE, resource)
-            item I18n.t('active_admin.edit'), edit_resource_path(resource), class: "edit_link #{options[:css_class]}", title: I18n.t('active_admin.edit')
+            item localizer.t(:edit), edit_resource_path(resource), class: "edit_link #{options[:css_class]}", title: localizer.t(:edit)
           end
           if controller.action_methods.include?('destroy') && authorized?(ActiveAdmin::Auth::DESTROY, resource)
-            item I18n.t('active_admin.delete'), resource_path(resource), class: "delete_link #{options[:css_class]}", title: I18n.t('active_admin.delete'),
-              method: :delete, data: {confirm: I18n.t('active_admin.delete_confirmation')}
+            item localizer.t(:delete), resource_path(resource), class: "delete_link #{options[:css_class]}", title: localizer.t(:delete),
+                                                                method: :delete, data: { confirm: localizer.t(:delete_confirmation) }
           end
         end
 
         class TableActions < ActiveAdmin::Component
           builder_method :table_actions
 
-          def item *args
-            text_node link_to *args
+          def item *args, **kwargs
+            text_node link_to(*args, **kwargs)
           end
         end
       end # IndexTableFor

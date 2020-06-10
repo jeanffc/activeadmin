@@ -10,7 +10,7 @@ resource you must first create a Rails model for it.
 ## Create a Resource
 
 The basic command for creating a resource is `rails g active_admin:resource Post`.
-The generator will produce an empty `app/admin/post.rb` file like so:
+The generator will produce an empty `app/admin/posts.rb` file like so:
 
 ```ruby
 ActiveAdmin.register Post do
@@ -116,9 +116,14 @@ config/locales/[en].yml:
 en:
   active_admin:
     resources:
-      offer:
-        new_model: 'Make an Offer'
+      offer: # Registered resource
+        new_model: 'Make an Offer' # new action item
+        edit_model: 'Change Offer' # edit action item
+        delete_model: 'Cancel Offer' # delete action item
 ```
+
+See the [default en.yml](/config/locales/en.yml) locale file for
+existing translations and examples.
 
 ## Rename the Resource
 
@@ -159,7 +164,8 @@ The menu method accepts a hash with the following options:
 
 * `:label` - The string or proc label to display in the menu. If it's a proc, it
   will be called each time the menu is rendered.
-* `:parent` - The string id (or label) of the parent used for this menu
+* `:parent` - The string id (or label) of the parent used for this menu, or an array
+  of string ids (or labels) for a nested menu
 * `:if` - A block or a symbol of a method to call to decide if the menu item
   should be displayed
 * `:priority` - The integer value of the priority, which defaults to `10`
@@ -221,6 +227,14 @@ end
 
 Note that the "Blog" parent menu item doesn't even have to exist yet; it can be
 dynamically generated for you.
+
+To further nest an item under a submenu, provide an array of parents.
+
+```ruby
+ActiveAdmin.register Post do
+  menu parent: ["Admin", "Blog"]
+end
+```
 
 ### Customizing Parent Menu Items
 
@@ -320,7 +334,7 @@ end
 
 ## Eager loading
 
-A common way to increase page performance is to elimate N+1 queries by eager
+A common way to increase page performance is to eliminate N+1 queries by eager
 loading associations:
 
 ```ruby
@@ -350,7 +364,7 @@ end
 ```
 
 If you need to completely replace the record retrieving code (e.g., you have a
-custom `to_param` implementation in your models), override the `resource` method
+custom `to_param` implementation in your models), override the `find_resource` method
 on the controller:
 
 ```ruby

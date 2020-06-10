@@ -11,21 +11,33 @@ module ActiveAdmin
         attr_accessor :resource
 
         def build(resource)
-          @resource = resource
-          @comments = ActiveAdmin::Comment.find_for_resource_in_namespace resource, active_admin_namespace.name
-          super(title, for: resource)
-          build_comments
+          if authorized?(ActiveAdmin::Auth::READ, ActiveAdmin::Comment)
+            @resource = resource
+            @comments = active_admin_authorization.scope_collection(ActiveAdmin::Comment.find_for_resource_in_namespace(resource, active_admin_namespace.name).includes(:author).page(params[:page]))
+            super(title, for: resource)
+            build_comments
+          end
         end
 
         protected
 
         def title
-          I18n.t 'active_admin.comments.title_content', count: @comments.count
+          I18n.t 'active_admin.comments.title_content', count: @comments.total_count
         end
 
         def build_comments
-          @comments.any? ? @comments.each(&method(:build_comment)) : build_empty_message
-          build_comment_form
+          if @comments.any?
+            @comments.each(&method(:build_comment))
+            div page_entries_info(@comments).html_safe, class: 'pagination_information'
+          else
+            build_empty_message
+          end
+
+          text_node paginate @comments
+
+          if authorized?(ActiveAdmin::Auth::CREATE, ActiveAdmin::Comment)
+            build_comment_form
+          end
         end
 
         def build_comment(comment)
@@ -68,9 +80,9 @@ module ActiveAdmin
         def build_comment_form
           active_admin_form_for(ActiveAdmin::Comment.new, url: comment_form_url) do |f|
             f.inputs do
-              f.input :resource_type, as: :hidden,  input_html: { value: ActiveAdmin::Comment.resource_type(parent.resource) }
-              f.input :resource_id,   as: :hidden,  input_html: { value: parent.resource.id }
-              f.input :body,          label: false, input_html: { size: '80x8' }
+              f.input :resource_type, as: :hidden, input_html: { value: ActiveAdmin::Comment.resource_type(parent.resource) }
+              f.input :resource_id, as: :hidden, input_html: { value: parent.resource.id }
+              f.input :body, label: false, input_html: { size: '80x8' }
             end
             f.actions do
               f.action :submit, label: I18n.t('active_admin.comments.add')

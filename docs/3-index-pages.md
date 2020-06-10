@@ -212,7 +212,24 @@ end
 ```
 
 Scopes can be labelled with a translation, e.g.
-`activerecord.scopes.invoice.expired`.
+`active_admin.scopes.scope_method`.
+
+### Scopes groups
+
+You can assign group names to scopes to keep related scopes together and separate them from the rest.
+
+```ruby
+# a scope in the default group
+scope :all
+
+# two scopes used to filter by status
+scope :active, group: :status
+scope :inactive, group: :status
+
+# two scopes used to filter by date
+scope :today, group: :date
+scope :tomorrow, group: :date
+```
 
 ## Index default sort order
 

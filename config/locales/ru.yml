@@ -31,6 +31,8 @@ ru:
         ends_with: "Заканчивается"
         greater_than: "больше"
         less_than: "меньше"
+        from: "От"
+        to: "До"
     search_status:
       headline: "Статус поиска:"
       current_scope: "Область:"
@@ -39,6 +41,7 @@ ru:
     status_tag:
       "yes": "Да"
       "no": "Нет"
+      "unset": "Нет"
     main_content: "Создайте %{model}#main_content для отображения содержимого."
     logout: "Выйти"
     powered_by: "Работает на %{active_admin} %{version}"

@@ -1,13 +1,29 @@
 es:
+  activerecord:
+    models:
+      comment:
+        one: "Comentario"
+        other: "Comentarios"
+      active_admin/comment:
+        one: "Comentario"
+        other: "Comentarios"
+    attributes:
+      active_admin/comment:
+        namespace: "Espacio de nombres"
+        body: "Cuerpo"
+        resource_type: "Tipo de recurso"
+        author_type: "Tipo de autor"
+        created_at: "Fecha de creación"
+        updated_at: "Fecha de actualización"
   active_admin:
-    dashboard: Inicio
+    dashboard: "Inicio"
     dashboard_welcome:
       welcome: "Bienvenido a Active Admin. Esta es la página de inicio predeterminada."
       call_to_action: "Para agregar secciones edite 'app/admin/dashboard.rb'"
     view: "Ver"
     edit: "Editar"
     delete: "Eliminar"
-    delete_confirmation: "¿Está seguro de que quiere eliminar esto?"
+    delete_confirmation: "¿Confirma que desea borrar este elemento?"
     create_another: "Crear otro %{model}"
     new_model: "Añadir %{model}"
     edit_model: "Editar %{model}"
@@ -21,6 +37,7 @@ es:
     has_many_new: "Añadir %{model}"
     has_many_delete: "Eliminar"
     has_many_remove: "Quitar"
+    move: "Mover"
     filters:
       buttons:
         filter: "Filtrar"
@@ -36,6 +53,8 @@ es:
         lteq_datetime: "Menor o igual que"
         from: "Desde"
         to: "Hasta"
+    scopes:
+      all: "Todos"
     search_status:
       headline: "Estado de la búsqueda:"
       current_scope: "Alcance:"
@@ -44,6 +63,7 @@ es:
     status_tag:
       "yes": "Sí"
       "no": "No"
+      "unset": "No"
     main_content: "Por favor implemente %{model}#main_content para mostrar contenido."
     logout: "Salir"
     powered_by: "Funciona con %{active_admin} %{version}"
@@ -69,7 +89,7 @@ es:
     batch_actions:
       button_label: "Acciones en masa"
       default_confirmation: "¿Seguro que quieres hacer esto?"
-      delete_confirmation: "Eliminar %{plural_model}: ¿Está seguro?"
+      delete_confirmation: "Se eliminarán %{plural_model}. ¿Desea continuar?"
       succesfully_destroyed:
         one: "Se ha destruido 1 %{model} con éxito"
         other: "Se han destruido %{count} %{plural_model} con éxito"
@@ -85,7 +105,7 @@ es:
       author: "Autor"
       add: "Comentar"
       delete: "Borrar Comentario"
-      delete_confirmation: "¿Está seguro que desea borrar este comentario?"
+      delete_confirmation: "¿Confirma que desea borrar este comentario?"
       resource: "Recurso"
       no_comments_yet: "No hay comentarios aún."
       author_missing: "Anónimo"
@@ -123,8 +143,8 @@ es:
         title: "Reenviar instrucciones de confirmación"
         submit: "Reenviar instrucciones de confirmación"
       links:
-        sign_up: "Ingresar"
-        sign_in: "Registrarse"
+        sign_up: "Registrarse"
+        sign_in: "Iniciar Sesión"
         forgot_your_password: "¿Olvidó su contraseña?"
         sign_in_with_omniauth_provider: "Conéctate con %{provider}"
         resend_unlock_instructions: "Reenviar instrucciones de desbloqueo"

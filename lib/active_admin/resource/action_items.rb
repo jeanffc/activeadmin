@@ -24,6 +24,7 @@ module ActiveAdmin
       #                         this action item on.
       #                 :except: A single or array of controller actions not to
       #                          display this action item on.
+      #                 :priority: A single integer value. To control the display order. Default is 10.
       def add_action_item(name, options = {}, &block)
         self.action_items << ActiveAdmin::ActionItem.new(name, options, &block)
       end
@@ -38,7 +39,7 @@ module ActiveAdmin
       #
       # @return [Array] Array of ActionItems for the controller actions
       def action_items_for(action, render_context = nil)
-        action_items.select{ |item| item.display_on? action, render_context }
+        action_items.select { |item| item.display_on? action, render_context }.sort_by(&:priority)
       end
 
       # Clears all the existing action items for this resource
@@ -86,7 +87,7 @@ module ActiveAdmin
           if controller.action_methods.include?('destroy') && authorized?(ActiveAdmin::Auth::DESTROY, resource)
             localizer = ActiveAdmin::Localizers.resource(active_admin_config)
             link_to localizer.t(:delete_model), resource_path(resource), method: :delete,
-              data: {confirm: localizer.t(:delete_confirmation)}
+                                                                         data: { confirm: localizer.t(:delete_confirmation) }
           end
         end
       end
@@ -109,6 +110,10 @@ module ActiveAdmin
 
     def html_class
       "action_item #{@options[:class]}".rstrip
+    end
+
+    def priority
+      @options[:priority] || 10
     end
   end
 

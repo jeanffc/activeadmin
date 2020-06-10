@@ -1,6 +1,7 @@
 require 'active_admin/resource_controller/action_builder'
 require 'active_admin/resource_controller/data_access'
 require 'active_admin/resource_controller/decorators'
+require 'active_admin/resource_controller/polymorphic_routes'
 require 'active_admin/resource_controller/scoping'
 require 'active_admin/resource_controller/streaming'
 require 'active_admin/resource_controller/sidebars'
@@ -18,17 +19,18 @@ module ActiveAdmin
     include ActionBuilder
     include Decorators
     include DataAccess
+    include PolymorphicRoutes
     include Scoping
     include Streaming
     include Sidebars
     include ViewHelpers::DownloadFormatLinksHelper
-    extend  ResourceClassMethods
+    extend ResourceClassMethods
 
     def self.active_admin_config=(config)
       if @active_admin_config = config
         defaults resource_class: config.resource_class,
-                 route_prefix:   config.route_prefix,
-                 instance_name:  config.resource_name.singular
+                 route_prefix: config.route_prefix,
+                 instance_name: config.resource_name.singular
       end
     end
 

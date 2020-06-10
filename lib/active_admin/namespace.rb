@@ -25,6 +25,12 @@ module ActiveAdmin
   # resource will be accessible from "/posts" and the controller will be PostsController.
   #
   class Namespace
+    class << self
+      def setting(name, default)
+        Deprecation.warn "This method does not do anything and will be removed."
+      end
+    end
+
     RegisterEvent = 'active_admin.namespace.register'.freeze
 
     attr_reader :application, :resources, :menus
@@ -39,6 +45,18 @@ module ActiveAdmin
 
     def name
       @name.to_sym
+    end
+
+    def settings
+      @settings ||= SettingsNode.build(application.namespace_settings)
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      settings.respond_to?(method) || super
+    end
+
+    def method_missing(method, *args)
+      settings.respond_to?(method) ? settings.send(method, *args) : super
     end
 
     # Register a resource into this namespace. The preffered method to access this is to
@@ -100,12 +118,6 @@ module ActiveAdmin
       resources[klass]
     end
 
-    # Override from ActiveAdmin::Settings to inherit default attributes
-    # from the application
-    def read_default_setting(name)
-      application.public_send name
-    end
-
     def fetch_menu(name)
       @menus.fetch(name)
     end
@@ -138,9 +150,9 @@ module ActiveAdmin
       if logout_link_path
         html_options = html_options.reverse_merge(method: logout_link_method || :get)
         menu.add id: 'logout', priority: priority, html_options: html_options,
-          label: ->{ I18n.t 'active_admin.logout' },
-          url:   ->{ render_or_call_method_or_proc_on self, active_admin_namespace.logout_link_path },
-          if:    :current_active_admin_user?
+                 label: -> { I18n.t 'active_admin.logout' },
+                 url: -> { render_or_call_method_or_proc_on self, active_admin_namespace.logout_link_path },
+                 if: :current_active_admin_user?
       end
     end
 
@@ -153,9 +165,9 @@ module ActiveAdmin
     def add_current_user_to_menu(menu, priority = 10, html_options = {})
       if current_user_method
         menu.add id: 'current_user', priority: priority, html_options: html_options,
-          label: -> { display_name current_active_admin_user },
-          url:   -> { auto_url_for(current_active_admin_user) },
-          if:    :current_active_admin_user?
+                 label: -> { display_name current_active_admin_user },
+                 url: -> { auto_url_for(current_active_admin_user) },
+                 if: :current_active_admin_user?
       end
     end
 
@@ -200,7 +212,7 @@ module ActiveAdmin
     def unload_resources!
       resources.each do |resource|
         parent = (module_name || 'Object').constantize
-        name   = resource.controller_name.split('::').last
+        name = resource.controller_name.split('::').last
         parent.send(:remove_const, name) if parent.const_defined?(name, false)
 
         # Remove circular references

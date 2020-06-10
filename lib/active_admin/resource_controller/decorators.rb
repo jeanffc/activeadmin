@@ -2,7 +2,7 @@ module ActiveAdmin
   class ResourceController < BaseController
     module Decorators
 
-    protected
+      protected
 
       def apply_decorator(resource)
         decorate? ? decorator_class.new(resource) : resource
@@ -24,7 +24,7 @@ module ActiveAdmin
         end
       end
 
-    private
+      private
 
       def decorate?
         case action_name
@@ -62,13 +62,13 @@ module ActiveAdmin
           end
         end
 
-      private
+        private
 
         def self.wrap!(parent, name)
           ::Class.new parent do
             delegate :reorder, :page, :current_page, :total_pages, :limit_value,
-                     :total_count, :total_pages, :to_key, :group_values, :except,
-                     :find_each, :ransack
+                     :total_count, :total_pages, :offset, :to_key, :group_values,
+                     :except, :find_each, :ransack
 
             define_singleton_method(:name) { name }
           end
@@ -77,7 +77,7 @@ module ActiveAdmin
         # Draper::CollectionDecorator was introduced in 1.0.0
         # Draper::Decorator#collection_decorator_class was introduced in 1.3.0
         def self.find_collection_decorator(decorator)
-          if Dependency.draper?    '>= 1.3.0'
+          if Dependency.draper? '>= 1.3.0'
             decorator.collection_decorator_class
           elsif Dependency.draper? '>= 1.0.0'
             draper_collection_decorator

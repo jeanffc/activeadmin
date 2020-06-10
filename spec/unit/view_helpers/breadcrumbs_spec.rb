@@ -1,20 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe "Breadcrumbs" do
-
   include ActiveAdmin::ViewHelpers
 
   describe "generating a trail from paths" do
-
     def params; {}; end
-    def link_to(name, url); {name: name, path: url}; end
+    def link_to(name, url); { name: name, path: url }; end
 
     actions = ActiveAdmin::BaseController::ACTIVE_ADMIN_ACTIONS
 
-    let(:user)        { double display_name: 'Jane Doe' }
+    let(:user) { double display_name: 'Jane Doe' }
     let(:user_config) { double find_resource: user, resource_name: double(route_key: 'users'),
                                defined_actions: actions }
-    let(:post)        { double display_name: 'Hello World' }
+    let(:post) { double display_name: 'Hello World' }
     let(:post_config) { double find_resource: post, resource_name: double(route_key: 'posts'),
                                defined_actions: actions, belongs_to_config: double(target: user_config) }
 
@@ -247,6 +245,5 @@ RSpec.describe "Breadcrumbs" do
         expect(trail[2]).to eq "Hello World"
       end
     end
-
   end
 end

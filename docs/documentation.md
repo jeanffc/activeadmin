@@ -13,7 +13,7 @@ on Rails application. To install, simply add the following to your Gemfile:
 
 ```ruby
 # Gemfile
-gem 'activeadmin', github: 'activeadmin'
+gem 'activeadmin'
 ```
 
 After updating your bundle, run the installer
@@ -29,7 +29,7 @@ configurations.
 Migrate your db and start the server:
 
 ```bash
-$> rake db:migrate
+$> rails db:migrate
 $> rails server
 ```
 

@@ -1,10 +1,5 @@
 def ensure_user_created(email)
-  user = AdminUser.where(email: email).first_or_create(password: 'password', password_confirmation: 'password')
-
-  unless user.persisted?
-    raise "Could not create user #{email}: #{user.errors.full_messages}"
-  end
-  user
+  AdminUser.create_with(password: 'password', password_confirmation: 'password').find_or_create_by!(email: email)
 end
 
 Given /^(?:I am logged|log) out$/ do
@@ -16,13 +11,12 @@ Given /^I am logged in$/ do
   login_as ensure_user_created 'admin@example.com'
 end
 
-# only for @requires-reloading scenario
 Given /^I am logged in with capybara$/ do
   ensure_user_created 'admin@example.com'
   step 'log out'
 
   visit new_admin_user_session_path
-  fill_in 'Email',    with: 'admin@example.com'
+  fill_in 'Email', with: 'admin@example.com'
   fill_in 'Password', with: 'password'
   click_button 'Login'
 end
@@ -41,8 +35,8 @@ Given /^"([^"]*)" requests a password reset with token "([^"]*)"( but it expires
 end
 
 Given /^override locale "([^"]*)" with "([^"]*)"$/ do |path, value|
-  keys_value  = path.split('.') + [value]
-  locale_hash = keys_value.reverse.inject{|a, n| {n=>a}}
+  keys_value = path.split('.') + [value]
+  locale_hash = keys_value.reverse.inject { |a, n| { n => a } }
   I18n.available_locales
   I18n.backend.store_translations(I18n.locale, locale_hash)
 end

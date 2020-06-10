@@ -7,13 +7,13 @@ module ActiveAdmin
       desc "Creates an admin user and uses Devise for authentication"
       argument :name, type: :string, default: "AdminUser"
 
-      class_option  :registerable, type: :boolean, default: false,
-                    desc: "Should the generated resource be registerable?"
+      class_option :registerable, type: :boolean, default: false,
+                                  desc: "Should the generated resource be registerable?"
 
       RESERVED_NAMES = [:active_admin_user]
 
-      class_option  :default_user, type: :boolean, default: true,
-                    desc: "Should a default user be created inside the migration?"
+      class_option :default_user, type: :boolean, default: true,
+                                  desc: "Should a default user be created inside the migration?"
 
       def install_devise
         begin

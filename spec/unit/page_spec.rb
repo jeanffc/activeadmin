@@ -1,14 +1,12 @@
 require 'rails_helper'
-require File.expand_path('config_shared_examples', File.dirname(__FILE__))
+require File.expand_path('config_shared_examples', __dir__)
 
 module ActiveAdmin
   RSpec.describe Page do
-
     it_should_behave_like "ActiveAdmin::Resource"
-    before { load_defaults! }
 
-    let(:application){ ActiveAdmin::Application.new }
-    let(:namespace){ Namespace.new(application, :admin) }
+    let(:application) { ActiveAdmin::Application.new }
+    let(:namespace) { Namespace.new(application, :admin) }
     let(:page_name) { "Chocolate I lØve You!" }
 
     def config(options = {})
@@ -20,7 +18,7 @@ module ActiveAdmin
         expect(config.controller_name).to eq "Admin::ChocolateILoveYouController"
       end
       context "when non namespaced controller" do
-        let(:namespace){ ActiveAdmin::Namespace.new(application, :root) }
+        let(:namespace) { ActiveAdmin::Namespace.new(application, :root) }
         it "should return a non namespaced controller name" do
           expect(config.controller_name).to eq "ChocolateILoveYouController"
         end
@@ -33,11 +31,7 @@ module ActiveAdmin
       end
 
       it "returns the singular, lowercase name" do
-        if RUBY_VERSION >= '2.4.0'
-          expect(config.resource_name.singular).to eq "chocolate i løve you!"
-        else
-          expect(config.resource_name.singular).to eq "chocolate i lØve you!"
-        end
+        expect(config.resource_name.singular).to eq "chocolate i løve you!"
       end
     end
 
